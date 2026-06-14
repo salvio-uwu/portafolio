@@ -75,7 +75,7 @@ export default function Nav() {
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           className="transition-opacity hover:opacity-80"
         >
-          <img src="/logoo.png" alt="Salvio Ulloa" className="h-10 w-auto" />
+          <img src="/logoo.png" alt="Salvio Ulloa" className="h-7 w-auto" />
         </button>
 
         <div className="hidden items-center gap-1 md:flex">
