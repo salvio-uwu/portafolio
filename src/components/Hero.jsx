@@ -1,58 +1,87 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { ArrowDown } from "lucide-react";
 import WhatsAppButton from "./WhatsAppButton";
 
 const chars = ["→", "↓", "←", "↑", "↙", "↘", "↗", "↖"];
+const brackets = ["{ }", "[ ]", "</ >", "( )"];
 
 const titleLine1 = "Infraestructura".split("");
 const titleLine2 = "que no se cae.".split("");
 
+function useIsMobile() {
+  const [mobile, setMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return mobile;
+}
+
 export default function Hero() {
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 });
+  const isMobile = useIsMobile();
 
   useEffect(() => {
+    if (isMobile) return;
     const handleMouse = (e) => {
       setMousePos({ x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight });
     };
     window.addEventListener("mousemove", handleMouse);
     return () => window.removeEventListener("mousemove", handleMouse);
-  }, []);
+  }, [isMobile]);
+
+  const particleCount = isMobile ? 5 : 16;
+  const bracketCount = isMobile ? 2 : 4;
+
+  const particles = useMemo(() =>
+    Array.from({ length: particleCount }).map((_, i) => ({
+      left: 4 + Math.random() * 92,
+      top: 4 + Math.random() * 92,
+      duration: 7 + Math.random() * 6,
+      delay: Math.random() * 5,
+    })), [particleCount]);
 
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
       <div className="pointer-events-none absolute inset-0">
-        <div
-          className="absolute h-[350px] w-[350px] md:h-[700px] md:w-[700px] rounded-full bg-terracota/4 blur-3xl"
-          style={{
-            left: `${mousePos.x * 50 + 25}%`,
-            top: `${mousePos.y * 50 + 10}%`,
-            transform: "translate(-50%, -50%)",
-          }}
-        />
-        <div
-          className="absolute h-[250px] w-[250px] md:h-[500px] md:w-[500px] rounded-full bg-sage/8 blur-3xl"
-          style={{
-            left: `${mousePos.x * 40 + 30}%`,
-            top: `${mousePos.y * 40 + 60}%`,
-            transform: "translate(-50%, -50%)",
-          }}
-        />
+        {!isMobile && (
+          <>
+            <div
+              className="absolute h-[350px] w-[350px] md:h-[700px] md:w-[700px] rounded-full bg-terracota/4 blur-3xl"
+              style={{
+                left: `${mousePos.x * 50 + 25}%`,
+                top: `${mousePos.y * 50 + 10}%`,
+                transform: "translate(-50%, -50%)",
+              }}
+            />
+            <div
+              className="absolute h-[250px] w-[250px] md:h-[500px] md:w-[500px] rounded-full bg-sage/8 blur-3xl"
+              style={{
+                left: `${mousePos.x * 40 + 30}%`,
+                top: `${mousePos.y * 40 + 60}%`,
+                transform: "translate(-50%, -50%)",
+              }}
+            />
+          </>
+        )}
       </div>
 
-      {Array.from({ length: 16 }).map((_, i) => (
+      {particles.map((p, i) => (
         <motion.span
           key={i}
           className="pointer-events-none absolute text-sm text-terracota/7 select-none"
-          style={{ left: `${4 + Math.random() * 92}%`, top: `${4 + Math.random() * 92}%` }}
+          style={{ left: `${p.left}%`, top: `${p.top}%` }}
           animate={{ y: [-20, 20, -20], x: [-5, 5, -5], rotate: [-10, 10, -10], opacity: [0.05, 0.18, 0.05] }}
-          transition={{ duration: 7 + Math.random() * 6, repeat: Infinity, delay: Math.random() * 5, ease: "easeInOut" }}
+          transition={{ duration: p.duration, repeat: Infinity, delay: p.delay, ease: "easeInOut" }}
         >
           {chars[i % chars.length]}
         </motion.span>
       ))}
 
-      {["{ }", "[ ]", "</ >", "( )"].map((pair, i) => (
+      {brackets.slice(0, bracketCount).map((pair, i) => (
         <motion.span
           key={`bracket-${i}`}
           className="pointer-events-none absolute text-xs text-terracota/4 select-none"

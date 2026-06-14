@@ -78,8 +78,8 @@ export default function Nav() {
         className={`absolute inset-0 transition-all duration-500 ${
           scrolled
             ? onDark
-              ? "bg-charcoal/85 max-md:bg-charcoal/95 backdrop-blur-xl border-b border-white/[0.04]"
-              : "bg-cream/85 max-md:bg-cream/95 backdrop-blur-xl border-b border-charcoal/[0.04]"
+              ? "bg-charcoal/85 max-md:bg-charcoal/95 md:backdrop-blur-xl border-b border-white/[0.04]"
+              : "bg-cream/85 max-md:bg-cream/95 md:backdrop-blur-xl border-b border-charcoal/[0.04]"
             : "bg-transparent"
         }`}
       />
@@ -131,8 +131,8 @@ export default function Nav() {
             transition={{ duration: 0.25, ease: "easeInOut" }}
             className={`overflow-hidden md:hidden ${
               isDarkBg
-                ? "bg-charcoal/95 backdrop-blur-xl border-b border-white/[0.04]"
-                : "bg-cream/95 backdrop-blur-xl border-b border-charcoal/[0.04]"
+                ? "bg-charcoal/95 border-b border-white/[0.04]"
+                : "bg-cream/95 border-b border-charcoal/[0.04]"
             }`}
           >
             <div className="flex flex-col px-6 pb-6 pt-2 gap-1">
