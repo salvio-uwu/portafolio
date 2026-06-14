@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 
@@ -18,22 +18,24 @@ export default function Nav() {
   const [ready, setReady] = useState(false);
   const [onDark, setOnDark] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const navRef = useRef(null);
 
   const handleScroll = useCallback(() => {
     const y = window.scrollY;
     setScrolled(y > 60);
 
-    const navH = 64;
-    const checkY = y + navH;
+    const nav = navRef.current;
+    if (!nav) return;
+    const navH = nav.offsetHeight;
 
     let dark = false;
     for (const id of darkSections) {
       const el = document.getElementById(id);
       if (el) {
         const rect = el.getBoundingClientRect();
-        const top = rect.top + y;
-        const bottom = rect.bottom + y;
-        if (checkY >= top && checkY < bottom) {
+        const sectionTop = rect.top + y;
+        const sectionBottom = rect.bottom + y;
+        if (y + navH > sectionTop && y < sectionBottom) {
           dark = true;
           break;
         }
@@ -44,11 +46,24 @@ export default function Nav() {
 
   useEffect(() => {
     setReady(true);
+
+    const raf = () => {
+      handleScroll();
+      ticking = false;
+    };
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(raf);
+        ticking = true;
+      }
+    };
+
     handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", handleScroll, { passive: true });
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", handleScroll);
     };
   }, [handleScroll]);
@@ -66,6 +81,7 @@ export default function Nav() {
 
   return (
     <motion.nav
+      ref={navRef}
       initial={false}
       animate={{
         y: ready ? 0 : -20,
