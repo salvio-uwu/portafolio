@@ -23,15 +23,16 @@ export default function Nav() {
     const y = window.scrollY;
     setScrolled(y > 60);
 
-    const navH = 72;
+    const navH = 64;
     const checkY = y + navH;
 
     let dark = false;
     for (const id of darkSections) {
       const el = document.getElementById(id);
       if (el) {
-        const top = el.offsetTop;
-        const bottom = top + el.offsetHeight;
+        const rect = el.getBoundingClientRect();
+        const top = rect.top + y;
+        const bottom = rect.bottom + y;
         if (checkY >= top && checkY < bottom) {
           dark = true;
           break;
@@ -45,7 +46,11 @@ export default function Nav() {
     setReady(true);
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
   }, [handleScroll]);
 
   const scrollTo = (id) => {
@@ -73,8 +78,8 @@ export default function Nav() {
         className={`absolute inset-0 transition-all duration-500 ${
           scrolled
             ? onDark
-              ? "bg-charcoal/40 backdrop-blur-xl border-b border-white/[0.04]"
-              : "bg-cream/40 backdrop-blur-xl border-b border-charcoal/[0.04]"
+              ? "bg-charcoal/85 max-md:bg-charcoal/95 backdrop-blur-xl border-b border-white/[0.04]"
+              : "bg-cream/85 max-md:bg-cream/95 backdrop-blur-xl border-b border-charcoal/[0.04]"
             : "bg-transparent"
         }`}
       />
@@ -104,9 +109,11 @@ export default function Nav() {
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className={`flex md:hidden items-center justify-center w-10 h-10 rounded-full transition-colors ${
-            isDarkBg
-              ? "text-cream/60 hover:text-cream"
-              : "text-charcoal/40 hover:text-charcoal"
+            scrolled
+              ? isDarkBg
+                ? "text-cream/70 hover:text-cream"
+                : "text-charcoal/50 hover:text-charcoal"
+              : "text-charcoal/50 hover:text-charcoal"
           }`}
           aria-label="Abrir menú"
         >
