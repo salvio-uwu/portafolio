@@ -70,7 +70,7 @@ export default function Proyectos() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.8 }}
-            className={`mb-24 last:mb-0 flex flex-col gap-8 md:flex-row md:gap-0 ${
+            className={`mb-16 last:mb-0 flex flex-col gap-6 md:flex-row md:gap-0 md:mb-24 ${
               isEven ? "" : "md:flex-row-reverse"
             }`}
           >
@@ -93,7 +93,7 @@ export default function Proyectos() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.15 + i * 0.1, duration: 0.7, ease: "easeOut" }}
-                className="relative text-[140px] font-bold leading-none tracking-tighter text-white/[0.02] select-none md:text-[180px]"
+                className="relative text-[100px] font-bold leading-none tracking-tighter text-white/[0.02] select-none md:text-[180px]"
               >
                 {proj.num}
               </motion.span>

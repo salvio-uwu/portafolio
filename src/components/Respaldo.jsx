@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SectionWrapper from "./SectionWrapper";
 
@@ -25,24 +25,42 @@ const skills = [
   { name: "CCNA", color: "border-cream/10 bg-cream/[0.03] text-cream/60", desc: "Fundamentos de networking Cisco. Enrutamiento, switching, VLANs y configuración de dispositivos de red." },
 ];
 
-function SkillBadge({ skill }) {
-  const [hovered, setHovered] = useState(false);
+function SkillBadge({ skill, activeId, setActiveId }) {
+  const ref = useRef(null);
+  const isActive = activeId === skill.name;
+
+  useEffect(() => {
+    if (!isActive) return;
+    const handler = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) {
+        setActiveId(null);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    document.addEventListener("touchstart", handler);
+    return () => {
+      document.removeEventListener("mousedown", handler);
+      document.removeEventListener("touchstart", handler);
+    };
+  }, [isActive, setActiveId]);
 
   return (
     <div
+      ref={ref}
       className="relative"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={() => setActiveId(skill.name)}
+      onMouseLeave={() => setActiveId(null)}
     >
       <motion.span
         whileHover={{ scale: 1.08, y: -2, transition: { duration: 0.15 } }}
-        className={`inline-block cursor-default rounded-xl border px-4 py-2.5 text-sm font-semibold transition-all ${skill.color} ${hovered ? "z-20" : "z-10"}`}
+        onClick={() => setActiveId(isActive ? null : skill.name)}
+        className={`inline-block cursor-pointer rounded-xl border px-4 py-2.5 text-sm font-semibold transition-all ${skill.color} ${isActive ? "z-20" : "z-10"}`}
       >
         {skill.name}
       </motion.span>
 
       <AnimatePresence>
-        {hovered && (
+        {isActive && (
           <motion.div
             initial={{ opacity: 0, y: 6, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -60,6 +78,8 @@ function SkillBadge({ skill }) {
 }
 
 export default function Respaldo() {
+  const [activeSkill, setActiveSkill] = useState(null);
+
   return (
     <SectionWrapper id="respaldo" className="bg-charcoal">
       <div className="text-center">
@@ -112,7 +132,7 @@ export default function Respaldo() {
                 },
               }}
             >
-              <SkillBadge skill={skill} />
+              <SkillBadge skill={skill} activeId={activeSkill} setActiveId={setActiveSkill} />
             </motion.div>
           ))}
         </motion.div>

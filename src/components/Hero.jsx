@@ -23,7 +23,7 @@ export default function Hero() {
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
       <div className="pointer-events-none absolute inset-0">
         <div
-          className="absolute h-[700px] w-[700px] rounded-full bg-terracota/4 blur-3xl"
+          className="absolute h-[350px] w-[350px] md:h-[700px] md:w-[700px] rounded-full bg-terracota/4 blur-3xl"
           style={{
             left: `${mousePos.x * 50 + 25}%`,
             top: `${mousePos.y * 50 + 10}%`,
@@ -31,7 +31,7 @@ export default function Hero() {
           }}
         />
         <div
-          className="absolute h-[500px] w-[500px] rounded-full bg-sage/8 blur-3xl"
+          className="absolute h-[250px] w-[250px] md:h-[500px] md:w-[500px] rounded-full bg-sage/8 blur-3xl"
           style={{
             left: `${mousePos.x * 40 + 30}%`,
             top: `${mousePos.y * 40 + 60}%`,

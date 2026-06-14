@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X } from "lucide-react";
 
 const links = [
   { id: "quien-soy", label: "Sobre mí" },
@@ -16,6 +17,7 @@ export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [ready, setReady] = useState(false);
   const [onDark, setOnDark] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleScroll = useCallback(() => {
     const y = window.scrollY;
@@ -47,8 +49,15 @@ export default function Nav() {
   }, [handleScroll]);
 
   const scrollTo = (id) => {
+    setMenuOpen(false);
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
+
+  const linkColor = scrolled && onDark
+    ? "text-cream/35 hover:text-cream/70 hover:bg-white/[0.06]"
+    : "text-charcoal/35 hover:text-charcoal/70 hover:bg-charcoal/[0.04]";
+
+  const isDarkBg = scrolled && onDark;
 
   return (
     <motion.nav
@@ -73,27 +82,73 @@ export default function Nav() {
       <div className="relative mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="transition-opacity hover:opacity-80"
+          className="transition-opacity hover:opacity-80 flex-shrink-0"
         >
           <img src="/logoo.png" alt="Salvio Ulloa" className="h-7 w-auto" />
         </button>
 
+        {/* Desktop links */}
         <div className="hidden items-center gap-1 md:flex">
           {links.map((link) => (
             <button
               key={link.id}
               onClick={() => scrollTo(link.id)}
-              className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-                scrolled && onDark
-                  ? "text-cream/35 hover:text-cream/70 hover:bg-white/[0.06]"
-                  : "text-charcoal/35 hover:text-charcoal/70 hover:bg-charcoal/[0.04]"
-              }`}
+              className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${linkColor}`}
             >
               {link.label}
             </button>
           ))}
         </div>
+
+        {/* Mobile hamburger */}
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className={`flex md:hidden items-center justify-center w-10 h-10 rounded-full transition-colors ${
+            isDarkBg
+              ? "text-cream/60 hover:text-cream"
+              : "text-charcoal/40 hover:text-charcoal"
+          }`}
+          aria-label="Abrir menú"
+        >
+          {menuOpen ? <X size={22} strokeWidth={1.5} /> : <Menu size={22} strokeWidth={1.5} />}
+        </button>
       </div>
+
+      {/* Mobile menu */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className={`overflow-hidden md:hidden ${
+              isDarkBg
+                ? "bg-charcoal/95 backdrop-blur-xl border-b border-white/[0.04]"
+                : "bg-cream/95 backdrop-blur-xl border-b border-charcoal/[0.04]"
+            }`}
+          >
+            <div className="flex flex-col px-6 pb-6 pt-2 gap-1">
+              {links.map((link, i) => (
+                <motion.button
+                  key={link.id}
+                  initial={{ opacity: 0, x: -16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  onClick={() => scrollTo(link.id)}
+                  className={`text-left rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
+                    isDarkBg
+                      ? "text-cream/50 hover:text-cream hover:bg-white/[0.04]"
+                      : "text-charcoal/45 hover:text-charcoal hover:bg-charcoal/[0.03]"
+                  }`}
+                >
+                  {link.label}
+                </motion.button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.nav>
   );
 }
